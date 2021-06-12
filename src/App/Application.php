@@ -13,6 +13,12 @@ class Application
 
     public function run()
     {
-        echo $this->router->dispatch();
+        $data = $this->router->dispatch();
+
+        if ($data instanceof Renderable) {
+            $data->render();
+        } else {
+            echo $data;
+        }
     }
 }
