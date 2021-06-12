@@ -16,8 +16,8 @@ class Router
     public function get($path, $callback)
     {
         if (is_string($callback)) {
-            $data = str_replace('@', '::', $callback);
-            $this->routers[$path] = $data();
+            $data = explode("@", $callback);
+            $this->routers[$path] = call_user_func(array(new $data[0], $data[1]));
         } else {
             $this->routers[$path] = $callback;
         }
