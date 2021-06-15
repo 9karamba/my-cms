@@ -8,16 +8,23 @@ class Router
 
     public function dispatch()
     {
-        $route = $this->routers[str_replace('/', '', $_SERVER['REQUEST_URI'])] ?? $this->routers[$_SERVER['REQUEST_URI']] ?? '';
+        $route = $this->routers[$_SERVER['REQUEST_URI']] ?? '';
 
-        return is_string($route) ? $route : $route();
+        if (is_string($route)) {
+            return $route;
+
+        } elseif (is_array($route)) {
+            return call_user_func($route);
+        }
+
+        return $route();
     }
 
     public function get($path, $callback)
     {
         if (is_string($callback)) {
-            $data = explode("@", $callback);
-            $this->routers[$path] = call_user_func(array(new $data[0], $data[1]));
+            [$class, $method] = explode("@", $callback);
+            $this->routers[$path] = array(new $class, $method);
         } else {
             $this->routers[$path] = $callback;
         }
